@@ -32,41 +32,45 @@
                 <form id="itemForm" class="my-3" @submit.prevent="addItem">
                     <h3 class="text-capitalize mb-4">to do list</h3>
                     <div class="input-group">
-                        <input type="text" class="form-control text-capitalize" id="itemInput" placeholder="name..."
-                            v-model="currentItem">
+                        <input type="text" class="form-control text-capitalize" id="itemInput" 
+                        v-model="currentItem"
+                        placeholder="name..."
+                           >
                         <div class="input-group-append">
                             <input class="btn btn-green text-capitalize" type="submit" value="Add"></input>
                         </div>
                     </div>
                 </form>
                 <div class="item-container">
+                    <div v-show="isArrayEmpty">
+                        <p>No items yet...</p>
+                    </div>
                     <!-- end of form  -->
-                    <div class="item-list my-5">
+                    <div class="item-list my-5" v-for="item in items">
                         <!-- single item -->
-                        <div v-for="item in items" class="item my-3">
-                            <h5 v-show="!item.editMode" :id="item.id"
-                                class="item-name text-capitalize" :class="{completed:item.isCompleted}">{{item.task}}
+                        <div class="item my-3">
+                            <h5 class="item-name text-capitalize" v-show="!item.editMode":class="{completed: item.done}" > {{item.task}}
                             </h5>
                             <div class="item-icons">
-                                <form v-show="item.editMode" @submit.prevent="taskEdited(item.id)">
+                                <form v-if="item.editMode" @submit.prevent="taskEdited(item.id)"> 
                                     <div class="input-group">
-                                        <input id="item--edit" class="form-control text-capitalize" type="text" v-model="item.task">
-                                        <input type="submit" class="btn btn-green text-capitalize" value="Aceptar">
+                                        <input id="item--edit" class="form-control text-capitalize" type="text" v-model="item.editingTaskText">
+                                        <input type="submit" class="btn btn-green text-capitalize" value="Aceptar" >
                                     </div>
                                 </form>
-                                <div v-show="!item.editMode" ><a href="#" @click="taskCompleted(item.id)"
-                                class="complete-item mx-2 item-icon"><i class="far fa-check-circle"></i></a>
+                                <div v-else><a href="#"
+                                class="complete-item mx-2 item-icon"><i class="far fa-check-circle" @click="completedTask(item.id)"></i></a>
                                 <!--TODO: EDIT MODE / SHOW MODE o bien usar contenteditable -->
-                                <a  @click="editItem(item.id)" href="#"
-                                class="edit-item mx-2 item-icon"><i class="far fa-edit"></i></a>
-                                <a  @click="removeItem(item.id)" href="#"
-                                class="delete-item item-icon"><i class="far fa-times-circle"></i></a></div>
+                                <a href="#"
+                                class="edit-item mx-2 item-icon" @click="editTask(item.id)"><i class="far fa-edit"></i></a>
+                                <a href="#"
+                                class="delete-item item-icon" @click="deleteTask(item.id)"><i class="far fa-times-circle"></i></a></div>
                             </div>
                         </div>
                         <!-- end of single item -->
                     </div>
-                    <button @click="removeTasksFinished" :disabled="mustDisable" type="button"
-                        class="btn btn-green my-3 text-capitalize" id="clear-list">clear
+                    <button type="button" :disabled= "isArrayEmpty"
+                        class="btn btn-green my-3 text-capitalize" @click="clearTasks" id="clear-list">clear
                         items</button>
                 </div>
             </div>

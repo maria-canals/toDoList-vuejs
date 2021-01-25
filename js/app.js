@@ -1,55 +1,55 @@
-import { nanoid } from 'https://cdn.jsdelivr.net/npm/nanoid/nanoid.js'
+import { nanoid } from "https://cdn.jsdelivr.net/npm/nanoid/nanoid.js";
 
 const app = Vue.createApp({
-    data() {
-        return {
-            items: [],
-            currentItem: ''
-        }
+  data() {
+    return {
+      items: [],
+      currentItem: "",
+      isClearButtonAvailable: false,
+    };
+  },
+  methods: {
+    getItemById(id) {
+      return this.items.find((item) => {
+        return item.id == id;
+      });
     },
-    methods: {
-        addItem() {
-            this.items.push({
-                id: nanoid(),
-                task: this.currentItem,
-                isCompleted: false,
-                editMode : false
-            })
-            this.currentItem = ''
-        },
-        findItemById(id) {
-            return this.items.find(item=> item.id == id)
-
-        },
-        removeItem(id) {
-            this.items = this.items.filter(item => {
-                return item.id != id
-            })
-        },
-        taskCompleted(id) {
-            let item = this.findItemById(id)
-            item.isCompleted = true
-        },
-        editItem(id) {
-            let item = this.findItemById(id)
-            item.editMode = true
-        },
-        taskEdited(id) {
-            let item = this.findItemById(id)
-            item.editMode = false
-
-        },
-        removeTasksFinished() {
-            this.items = this.items.filter(item => {
-                return !item.isCompleted
-            })
-        }
+    addItem() {
+      this.items.push({
+        id: nanoid(),
+        task: this.currentItem,
+        isCompleted: false,
+        editMode: false,
+        editingTaskText: this.currentItem,
+      });
+      this.currentItem = "";
     },
-    computed: {
-        mustDisable() {
-            return this.items.length == 0
-        }
-    }
-})
+    completedTask(id) {
+      let item = this.getItemById(id);
+      item.isCompleted = true;
+      item.done = !item.done;
+    },
+    deleteTask(id) {
+      this.items = this.items.filter((item) => item.id != id);
+    },
+    clearTasks() {
+      this.items = this.items.filter((item) => !item.done);
+    },
+    editTask(id) {
+      let item = this.getItemById(id);
+      item.editMode = true;
+    },
+    taskEdited(id) {
+      let item = this.getItemById(id);
+      item.task = item.editingTaskText;
+      item.editMode = false;
+    },
+  },
+  computed: {
+    isArrayEmpty() {
+      return this.items.length == 0;
+    },
+  },
+});
 
-app.mount('#app')
+app.mount("#app");
